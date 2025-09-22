@@ -1,43 +1,60 @@
 import React from "react";
 import ProgressTracker from "./ProgressTracker";
+import { GoogleLogin } from "@react-oauth/google";
 
 function App() {
   return (
-    <div style={{
-      minHeight: "100vh",
-      width: "100vw", // Force full viewport width
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center", // Center vertically
-      alignItems: "center", // Center horizontally
-      padding: "2rem",
-      background: "#f0f8ff",
-      fontFamily: "'Luckiest Guy', cursive",
-      boxSizing: "border-box",
-      margin: 0 // Remove any default margins
-    }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2rem",
+        background: "#f0f8ff",
+        fontFamily: "'Luckiest Guy', cursive",
+        boxSizing: "border-box",
+        margin: 0,
+      }}
+    >
       {/* Title */}
-      <h1 style={{ 
-        textAlign: "center", 
-        marginBottom: "2rem",
-        fontSize: "3rem",
-        color: "#333",
-        textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
-        width: "100%" // Ensure title takes full width
-      }}>
+      <h1
+        style={{
+          textAlign: "center",
+          marginBottom: "2rem",
+          fontSize: "3rem",
+          color: "#333",
+          textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+          width: "100%",
+        }}
+      >
         One Piece Tracker 🏴‍☠️
       </h1>
 
+      {/* Google Login Button */}
+      <GoogleLogin
+        onSuccess={(credentialResponse) => {
+          console.log("Login Success:", credentialResponse);
+        }}
+        onError={() => {
+          console.log("Login Failed");
+        }}
+      />
+
       {/* Main container for the trackers */}
-      <div style={{
-        display: "flex",
-        flexWrap: "wrap",
-        gap: "2rem",
-        justifyContent: "center",
-        alignItems: "center", // Changed from flex-start
-        maxWidth: "1200px",
-        width: "100%"
-      }}>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "2rem",
+          justifyContent: "center",
+          alignItems: "center",
+          maxWidth: "1200px",
+          width: "100%",
+        }}
+      >
         {/* Anime Tracker */}
         <ProgressTracker
           title="One Piece Anime"
