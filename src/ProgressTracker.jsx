@@ -49,7 +49,7 @@ function ProgressTracker({ title, totalCount, unitLabel, accentGradient }) {
       }} />
 
       {/* Card content */}
-      <div style={{ position: "relative", zIndex: 1 }}>
+      <div style={{ position: "relative", zIndex: 1, width: "100%" }}>
         <h2 style={{ marginBottom: "1rem", fontSize: "1.6rem", color: "#333" }}>
           {title} {unitLabel.includes("Episodes") ? "🎬" : "📖"}
         </h2>
