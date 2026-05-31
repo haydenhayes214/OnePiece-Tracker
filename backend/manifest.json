@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "One Piece Tracker",
+  "version": "1.0.0",
+  "description": "Track your One Piece anime progress by arc and plan your weekly catch-up schedule.",
+  "permissions": ["storage", "sidePanel"],
+  "action": {
+    "default_title": "One Piece Tracker"
+  },
+  "side_panel": {
+    "default_path": "sidepanel/index.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
