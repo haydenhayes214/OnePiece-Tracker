@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getArcsForSaga, SAGA_TABS } from "@backend/data/sagas.js";
 import AppTitle from "./components/AppTitle.jsx";
 import ArcCard from "./components/ArcCard.jsx";
@@ -21,8 +21,13 @@ export default function App() {
 
   const [activeSaga, setActiveSaga] = useState("all");
   const [expandedArcId, setExpandedArcId] = useState(null);
+  const arcGridRef = useRef(null);
 
   const visibleArcs = useMemo(() => getArcsForSaga(activeSaga), [activeSaga]);
+
+  useEffect(() => {
+    arcGridRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeSaga]);
 
   const activeSagaName = SAGA_TABS.find((t) => t.id === activeSaga)?.name ?? "Arcs";
 
@@ -54,36 +59,38 @@ export default function App() {
         onTargetDateChange={setTargetDate}
       />
 
-      <SagaTabs
-        tabs={SAGA_TABS}
-        activeId={activeSaga}
-        onSelect={(id) => {
-          setActiveSaga(id);
-          setExpandedArcId(null);
-        }}
-      />
+      <main className="app-main">
+        <SagaTabs
+          tabs={SAGA_TABS}
+          activeId={activeSaga}
+          onSelect={(id) => {
+            setActiveSaga(id);
+            setExpandedArcId(null);
+          }}
+        />
 
-      <section className="arcs-section">
-        <div className="arcs-section-header">
-          <h2>{activeSagaName}</h2>
-          {saving && <span className="saving">Saving…</span>}
-        </div>
+        <section className="arcs-section" aria-label={`${activeSagaName} arcs`}>
+          <div className="arcs-section-header">
+            <h2>{activeSagaName}</h2>
+            <span className="arc-count">{visibleArcs.length} arcs</span>
+            {saving && <span className="saving">Saving…</span>}
+          </div>
 
-        <div className="arc-grid">
-          {visibleArcs.map((arc) => (
-            <ArcCard
-              key={arc.id}
-              arc={arc}
-              arcProgress={progress.arcProgress}
-              expanded={expandedArcId === arc.id}
-              onToggle={(id) => setExpandedArcId((prev) => (prev === id ? null : id))}
-              onChange={(id, watched) => updateArc(id, watched)}
-            />
-          ))}
-        </div>
-
-        {visibleArcs.length === 0 && <p className="empty">No arcs in this saga.</p>}
-      </section>
+          <div className="arc-grid" ref={arcGridRef}>
+            {visibleArcs.map((arc) => (
+              <ArcCard
+                key={arc.id}
+                arc={arc}
+                arcProgress={progress.arcProgress}
+                expanded={expandedArcId === arc.id}
+                onToggle={(id) => setExpandedArcId((prev) => (prev === id ? null : id))}
+                onChange={(id, watched) => updateArc(id, watched)}
+              />
+            ))}
+            {visibleArcs.length === 0 && <p className="empty">No arcs in this saga.</p>}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

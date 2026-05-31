@@ -2,9 +2,17 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
   background: #f8fafc;
+}
+
+.app-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .app.loading {
@@ -234,6 +242,7 @@
 
 /* Saga tabs */
 .saga-tabs {
+  flex-shrink: 0;
   padding: 0.75rem 1.25rem 0;
   background: #f8fafc;
 }
@@ -245,11 +254,19 @@
   background: #e2e8f0;
   border-radius: 999px;
   overflow-x: auto;
-  scrollbar-width: none;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 transparent;
 }
 
 .saga-tabs-track::-webkit-scrollbar {
-  display: none;
+  height: 4px;
+}
+
+.saga-tabs-track::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 999px;
 }
 
 .saga-tab {
@@ -282,14 +299,26 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 0.75rem 1.25rem 1.25rem;
+  overflow: hidden;
+  padding: 0.75rem 1.25rem 1rem;
 }
 
 .arcs-section-header {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
   margin-bottom: 0.75rem;
+}
+
+.arc-count {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.arcs-section-header .saving {
+  margin-left: auto;
 }
 
 .arcs-section-header h2 {
@@ -306,27 +335,30 @@
 
 .arc-grid {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.75rem;
-  padding-right: 0.15rem;
+  padding-right: 0.35rem;
+  padding-bottom: 0.5rem;
   align-content: start;
 }
 
-@media (min-width: 480px) {
-  .arc-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 .arc-grid::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .arc-grid::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 999px;
+}
+
+.arc-grid::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* Arc cards */
