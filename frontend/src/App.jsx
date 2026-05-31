@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { getArcsForSaga, SAGA_TABS } from "@backend/data/sagas.js";
+import AppTitle from "./components/AppTitle.jsx";
 import ArcCard from "./components/ArcCard.jsx";
 import DashboardHeader from "./components/DashboardHeader.jsx";
 import SagaTabs from "./components/SagaTabs.jsx";
@@ -40,6 +41,8 @@ export default function App() {
 
   return (
     <div className="app">
+      <AppTitle />
+
       <DashboardHeader
         overall={overall}
         totalEpisodes={totalEpisodes}

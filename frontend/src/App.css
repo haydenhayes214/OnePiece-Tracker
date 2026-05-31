@@ -13,10 +13,45 @@
   color: #64748b;
 }
 
+/* App title */
+.app-title {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.25rem 1.25rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.app-title-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  color: #0f172a;
+}
+
+.app-title-text h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.app-title-text p {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.4;
+}
+
 /* Dashboard */
 .dashboard {
   flex-shrink: 0;
-  padding: 1rem 1.25rem 0.75rem;
+  padding: 0.75rem 1.25rem 0.75rem;
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
 }
