@@ -5,6 +5,7 @@ import ArcCard from "./components/ArcCard.jsx";
 import AuthBar from "./components/AuthBar.jsx";
 import DashboardHeader from "./components/DashboardHeader.jsx";
 import EpisodeSyncBanner from "./components/EpisodeSyncBanner.jsx";
+import HomePage from "./components/HomePage.jsx";
 import SagaTabs from "./components/SagaTabs.jsx";
 import { useAuth } from "./hooks/useAuth.js";
 import { useProgress } from "./hooks/useProgress.js";
@@ -53,6 +54,17 @@ export default function App() {
     return (
       <div className="app loading">
         <p>Loading your voyage log...</p>
+      </div>
+    );
+  }
+
+  const showHome = !auth.authLoading && !auth.user && auth.configured;
+
+  if (showHome) {
+    return (
+      <div className="app">
+        <AppTitle />
+        <HomePage busy={auth.busy} error={auth.error} onSignIn={auth.signIn} />
       </div>
     );
   }

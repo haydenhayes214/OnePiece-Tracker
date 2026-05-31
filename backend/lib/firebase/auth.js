@@ -48,10 +48,22 @@ export async function signInWithGoogle() {
   const auth = getFirebaseAuth();
   if (!auth) throw new Error("Firebase Auth failed to initialize.");
 
-  const token = await getAuthTokenInteractive();
-  const credential = GoogleAuthProvider.credential(null, token);
-  const result = await signInWithCredential(auth, credential);
-  return result.user;
+  let token = await getAuthTokenInteractive();
+  let credential = GoogleAuthProvider.credential(null, token);
+
+  try {
+    const result = await signInWithCredential(auth, credential);
+    return result.user;
+  } catch (error) {
+    if (error?.code === "auth/invalid-credential" && token) {
+      await removeCachedAuthToken(token);
+      token = await getAuthTokenInteractive();
+      credential = GoogleAuthProvider.credential(null, token);
+      const result = await signInWithCredential(auth, credential);
+      return result.user;
+    }
+    throw error;
+  }
 }
 
 export async function signOutUser() {
