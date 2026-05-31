@@ -1,7 +1,9 @@
 /**
  * One Piece anime arcs with inclusive episode ranges.
- * Update `end` on the latest arc as new episodes air.
+ * The latest arc end is extended automatically via episode sync.
  */
+export const LATEST_ARC_ID = "elbaph";
+
 export const ARCS = [
   { id: "romance-dawn", name: "Romance Dawn", start: 1, end: 3 },
   { id: "orange-town", name: "Orange Town", start: 4, end: 8 },
@@ -52,7 +54,7 @@ export const ARCS = [
   { id: "elbaph", name: "Elbaph", start: 1156, end: 1164 },
 ];
 
-export const TOTAL_EPISODES = ARCS[ARCS.length - 1].end;
+export const BASE_TOTAL_EPISODES = ARCS[ARCS.length - 1].end;
 
 export function getArcEpisodeCount(arc) {
   return arc.end - arc.start + 1;

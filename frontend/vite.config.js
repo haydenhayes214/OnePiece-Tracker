@@ -7,7 +7,11 @@ export default defineConfig({
   resolve: {
     alias: {
       "@backend": resolve(__dirname, "../backend"),
+      firebase: resolve(__dirname, "node_modules/firebase"),
     },
+  },
+  optimizeDeps: {
+    include: ["firebase/app", "firebase/auth", "firebase/firestore"],
   },
   build: {
     outDir: resolve(__dirname, "../backend/extension/sidepanel"),

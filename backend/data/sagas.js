@@ -1,4 +1,4 @@
-import { ARCS } from "./arcs.js";
+import { getArcs } from "../lib/arcCatalog.js";
 
 /** @type {{ id: string, name: string, arcIds: string[] }[]} */
 export const SAGAS = [
@@ -103,10 +103,11 @@ export function getSagaName(arcId) {
 }
 
 export function getArcsForSaga(sagaId) {
-  if (sagaId === "all") return ARCS;
+  const arcs = getArcs();
+  if (sagaId === "all") return arcs;
   const saga = SAGAS.find((s) => s.id === sagaId);
   if (!saga) return [];
-  return ARCS.filter((a) => saga.arcIds.includes(a.id));
+  return arcs.filter((a) => saga.arcIds.includes(a.id));
 }
 
 export const SAGA_TABS = [{ id: "all", name: "All Arcs" }, ...SAGAS.map((s) => ({ id: s.id, name: s.name }))];

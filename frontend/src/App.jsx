@@ -2,28 +2,41 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { getArcsForSaga, SAGA_TABS } from "@backend/data/sagas.js";
 import AppTitle from "./components/AppTitle.jsx";
 import ArcCard from "./components/ArcCard.jsx";
+import AuthBar from "./components/AuthBar.jsx";
 import DashboardHeader from "./components/DashboardHeader.jsx";
+import EpisodeSyncBanner from "./components/EpisodeSyncBanner.jsx";
 import SagaTabs from "./components/SagaTabs.jsx";
+import { useAuth } from "./hooks/useAuth.js";
 import { useProgress } from "./hooks/useProgress.js";
 import "./App.css";
 
 export default function App() {
   const {
+    arcs,
     totalEpisodes,
     progress,
     overall,
     catchup,
     saving,
+    ready,
+    episodeMeta,
+    episodeSyncing,
+    refreshEpisodeMeta,
+    reloadProgress,
     updateArc,
     updateCurrentEpisode,
     setTargetDate,
   } = useProgress();
 
+  const auth = useAuth({
+    onSyncComplete: () => reloadProgress(),
+  });
+
   const [activeSaga, setActiveSaga] = useState("all");
   const [expandedArcId, setExpandedArcId] = useState(null);
   const arcGridRef = useRef(null);
 
-  const visibleArcs = useMemo(() => getArcsForSaga(activeSaga), [activeSaga]);
+  const visibleArcs = useMemo(() => getArcsForSaga(activeSaga), [activeSaga, arcs]);
 
   useEffect(() => {
     arcGridRef.current?.scrollTo({ top: 0, behavior: "smooth" });
@@ -36,7 +49,7 @@ export default function App() {
     updateCurrentEpisode(next);
   };
 
-  if (!progress) {
+  if (!ready || !progress) {
     return (
       <div className="app loading">
         <p>Loading your voyage log...</p>
@@ -47,6 +60,21 @@ export default function App() {
   return (
     <div className="app">
       <AppTitle />
+
+      <AuthBar
+        user={auth.user}
+        configured={auth.configured}
+        busy={auth.busy}
+        error={auth.error}
+        onSignIn={auth.signIn}
+        onSignOut={auth.signOut}
+      />
+
+      <EpisodeSyncBanner
+        meta={episodeMeta}
+        syncing={episodeSyncing}
+        onRefresh={() => refreshEpisodeMeta({ force: true })}
+      />
 
       <DashboardHeader
         overall={overall}

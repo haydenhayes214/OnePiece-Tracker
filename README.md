@@ -6,62 +6,48 @@ Track your **One Piece anime** progress arc by arc, set a target catch-up date, 
 
 ```
 OnePiece-Tracker/
-├── backend/          # Extension manifest, service worker, shared data & logic
-│   ├── data/         # Arc episode ranges
-│   ├── lib/          # Progress, catch-up math, chrome.storage helpers
-│   ├── manifest.json
+├── backend/          # Extension manifest, service worker, data & logic
+│   ├── data/         # Arcs, sagas, color themes
+│   ├── lib/          # Progress, storage, episode sync, Firebase
 │   └── extension/    # Built output — load this folder in Chrome
 ├── frontend/         # React side panel UI (Vite)
-└── scripts/          # Build script that bundles frontend into the extension
+├── docs/             # Setup guides
+└── scripts/          # Build script
 ```
 
 ## Features
 
-- **Per-arc progress** — Mark episodes watched for each of 47 story arcs (1,164 episodes total as of May 2026).
-- **Global episode shortcut** — Set your current episode number to update all arcs at once.
-- **Catch-up planner** — Pick a target date; the extension calculates episodes per week (and per day).
-- **Local storage** — Progress is saved with `chrome.storage` and persists across browser sessions.
+- **Per-arc progress** — 47 arcs with saga tabs and color-coded cards
+- **Catch-up planner** — Episodes per week to hit your target date
+- **Auto episode updates** — Checks [Jikan API](https://api.jikan.moe/) daily and extends the latest arc
+- **Google sign-in & cloud save** — Optional Firebase sync across devices (see [docs/CLOUD_SETUP.md](docs/CLOUD_SETUP.md))
+- **Offline-first** — Works locally without an account
 
-## Development
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) 18+
-- Google Chrome
-
-### Install & build
+## Quick start
 
 ```bash
 npm install --prefix frontend
 npm run build
 ```
 
-This creates `backend/extension/` with the side panel UI and extension files.
+Load `backend/extension` in Chrome (`chrome://extensions` → Developer mode → Load unpacked).
 
-### Load in Chrome
+## Cloud save (optional)
 
-1. Open `chrome://extensions`
-2. Enable **Developer mode**
-3. Click **Load unpacked**
-4. Select the `backend/extension` folder
-5. Click the extension icon in the toolbar to open the **side panel** (dock it on the right like Tagit)
+1. Copy `frontend/.env.example` → `frontend/.env`
+2. Follow [docs/CLOUD_SETUP.md](docs/CLOUD_SETUP.md) for Firebase + Google OAuth
+3. Rebuild: `npm run build`
 
-### Dev mode (browser preview)
+Without `.env`, the extension runs locally only.
 
-For UI work without reloading the extension each time:
+## Development
 
 ```bash
-npm install --prefix frontend
-npm run dev
+npm run dev          # Vite preview (localStorage, no extension APIs)
+npm run build        # Production extension build
 ```
 
-Open the Vite URL in a normal browser tab. Progress saves to `localStorage` instead of `chrome.storage` when not running as an extension.
-
-After UI changes, run `npm run build` and click **Reload** on the extension card in Chrome.
-
-## Updating episode counts
-
-When new episodes air, edit `backend/data/arcs.js` — update the `end` field on the latest arc (e.g. Elbaph) and run `npm run build` again.
+After changes, reload the extension on `chrome://extensions`.
 
 ## License
 

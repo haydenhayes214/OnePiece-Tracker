@@ -1,9 +1,19 @@
 {
   "manifest_version": 3,
   "name": "One Piece Tracker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Track your One Piece anime progress by arc and plan your weekly catch-up schedule.",
-  "permissions": ["storage", "sidePanel"],
+  "permissions": ["storage", "sidePanel", "identity", "alarms"],
+  "host_permissions": [
+    "https://api.jikan.moe/*",
+    "https://*.googleapis.com/*",
+    "https://*.firebaseio.com/*",
+    "https://firestore.googleapis.com/*"
+  ],
+  "oauth2": {
+    "client_id": "653403210426-ki24d5psgp4e9g0nr3h2jruo4lr6rd8s.apps.googleusercontent.com",
+    "scopes": ["openid", "email", "profile"]
+  },
   "action": {
     "default_title": "One Piece Tracker"
   },

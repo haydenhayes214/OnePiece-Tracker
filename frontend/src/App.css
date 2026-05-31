@@ -21,6 +21,127 @@
   color: #64748b;
 }
 
+/* Auth */
+.auth-bar {
+  flex-shrink: 0;
+  padding: 0.65rem 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.auth-bar--info {
+  background: #f8fafc;
+}
+
+.auth-bar--info p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.auth-bar--info code {
+  font-size: 0.7rem;
+  background: #e2e8f0;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+
+.auth-signed-in,
+.auth-signed-out {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.auth-signed-out {
+  justify-content: space-between;
+}
+
+.auth-signed-out p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.auth-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.auth-user-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-hint {
+  font-size: 0.7rem;
+  color: #22c55e;
+}
+
+.auth-btn {
+  flex-shrink: 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: none;
+}
+
+.auth-btn--primary {
+  background: #0f172a;
+  color: #fff;
+}
+
+.auth-btn--outline {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  color: #334155;
+}
+
+.auth-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
+/* Episode sync */
+.episode-sync-banner {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 1.25rem;
+  background: #eff6ff;
+  border-bottom: 1px solid #bfdbfe;
+  font-size: 0.75rem;
+  color: #1e40af;
+}
+
+.episode-sync-refresh {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #93c5fd;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
 /* App title */
 .app-title {
   flex-shrink: 0;

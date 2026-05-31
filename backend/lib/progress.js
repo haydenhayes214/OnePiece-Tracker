@@ -1,6 +1,6 @@
-import { ARCS, getArcEpisodeCount } from "../data/arcs.js";
+import { getArcEpisodeCount, getArcs } from "./arcCatalog.js";
 
-/** @typedef {{ arcProgress: Record<string, number>, targetDate: string | null, currentEpisode: number }} UserProgress */
+/** @typedef {{ arcProgress: Record<string, number>, targetDate: string | null, currentEpisode: number, updatedAt?: number }} UserProgress */
 
 export const STORAGE_KEY = "onePieceProgress";
 
@@ -8,11 +8,9 @@ export const DEFAULT_PROGRESS = {
   arcProgress: {},
   targetDate: null,
   currentEpisode: 0,
+  updatedAt: 0,
 };
 
-/**
- * Episodes completed within a single arc (0 .. arc length).
- */
 export function getArcWatched(arcProgress, arcId) {
   const n = arcProgress[arcId];
   return typeof n === "number" && n >= 0 ? n : 0;
@@ -29,7 +27,7 @@ export function getOverallStats(arcProgress) {
   let watchedTotal = 0;
   let episodeTotal = 0;
 
-  for (const arc of ARCS) {
+  for (const arc of getArcs()) {
     const total = getArcEpisodeCount(arc);
     const watched = Math.min(getArcWatched(arcProgress, arc.id), total);
     watchedTotal += watched;
@@ -43,12 +41,9 @@ export function getOverallStats(arcProgress) {
   return { watchedTotal, episodeTotal, remaining, percent };
 }
 
-/**
- * Highest global episode number implied by per-arc progress.
- */
 export function deriveCurrentEpisode(arcProgress) {
   let maxEpisode = 0;
-  for (const arc of ARCS) {
+  for (const arc of getArcs()) {
     const watched = getArcWatched(arcProgress, arc.id);
     if (watched > 0) {
       maxEpisode = Math.max(maxEpisode, arc.start + watched - 1);
@@ -62,19 +57,17 @@ export function clampArcWatched(arc, value) {
   return Math.max(0, Math.min(total, Math.floor(Number(value)) || 0));
 }
 
-/**
- * Set progress for one arc; optionally sync arcs before it as fully watched.
- */
 export function setArcWatched(arcProgress, arcId, watched, { fillPrior = false } = {}) {
-  const arc = ARCS.find((a) => a.id === arcId);
+  const arc = getArcs().find((a) => a.id === arcId);
   if (!arc) return { ...arcProgress };
 
   const next = { ...arcProgress, [arcId]: clampArcWatched(arc, watched) };
 
   if (fillPrior) {
-    const idx = ARCS.findIndex((a) => a.id === arcId);
+    const arcs = getArcs();
+    const idx = arcs.findIndex((a) => a.id === arcId);
     for (let i = 0; i < idx; i++) {
-      const a = ARCS[i];
+      const a = arcs[i];
       next[a.id] = getArcEpisodeCount(a);
     }
   }
@@ -82,14 +75,11 @@ export function setArcWatched(arcProgress, arcId, watched, { fillPrior = false }
   return next;
 }
 
-/**
- * Mark through global episode number across arcs.
- */
 export function setCurrentEpisode(arcProgress, episode) {
   const ep = Math.max(0, Math.floor(Number(episode)) || 0);
   const next = { ...arcProgress };
 
-  for (const arc of ARCS) {
+  for (const arc of getArcs()) {
     if (ep < arc.start) {
       next[arc.id] = 0;
     } else if (ep >= arc.end) {
@@ -107,11 +97,35 @@ export function mergeStoredProgress(stored) {
     return { ...DEFAULT_PROGRESS };
   }
   return {
-    arcProgress: stored.arcProgress && typeof stored.arcProgress === "object"
-      ? { ...stored.arcProgress }
-      : {},
+    arcProgress:
+      stored.arcProgress && typeof stored.arcProgress === "object"
+        ? { ...stored.arcProgress }
+        : {},
     targetDate: stored.targetDate ?? null,
-    currentEpisode:
-      typeof stored.currentEpisode === "number" ? stored.currentEpisode : 0,
+    currentEpisode: typeof stored.currentEpisode === "number" ? stored.currentEpisode : 0,
+    updatedAt: typeof stored.updatedAt === "number" ? stored.updatedAt : 0,
+  };
+}
+
+/**
+ * Merge local and cloud progress — keeps max per-arc watch counts; newest updatedAt wins for metadata.
+ */
+export function mergeProgress(local, remote) {
+  if (!remote) return local;
+  if (!local) return remote;
+
+  const arcProgress = { ...local.arcProgress };
+  for (const [arcId, remoteWatched] of Object.entries(remote.arcProgress ?? {})) {
+    const localWatched = arcProgress[arcId] ?? 0;
+    arcProgress[arcId] = Math.max(localWatched, remoteWatched);
+  }
+
+  const useRemoteMeta = (remote.updatedAt ?? 0) > (local.updatedAt ?? 0);
+
+  return {
+    arcProgress,
+    targetDate: useRemoteMeta ? remote.targetDate : local.targetDate ?? remote.targetDate,
+    currentEpisode: deriveCurrentEpisode(arcProgress),
+    updatedAt: Math.max(local.updatedAt ?? 0, remote.updatedAt ?? 0),
   };
 }
