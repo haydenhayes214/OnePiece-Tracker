@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import { getArcsForSaga, SAGA_TABS } from "@backend/data/sagas.js";
 import ArcCard from "./components/ArcCard.jsx";
-import CatchUpPanel from "./components/CatchUpPanel.jsx";
-import OverallProgress from "./components/OverallProgress.jsx";
+import DashboardHeader from "./components/DashboardHeader.jsx";
 import SagaTabs from "./components/SagaTabs.jsx";
 import { useProgress } from "./hooks/useProgress.js";
 import "./App.css";
@@ -21,11 +20,15 @@ export default function App() {
 
   const [activeSaga, setActiveSaga] = useState("all");
   const [expandedArcId, setExpandedArcId] = useState(null);
-  const [catchupCollapsed, setCatchupCollapsed] = useState(false);
 
   const visibleArcs = useMemo(() => getArcsForSaga(activeSaga), [activeSaga]);
 
   const activeSagaName = SAGA_TABS.find((t) => t.id === activeSaga)?.name ?? "Arcs";
+
+  const handleIncrementEpisode = (delta) => {
+    const next = Math.min(totalEpisodes, Math.max(0, (progress?.currentEpisode ?? 0) + delta));
+    updateCurrentEpisode(next);
+  };
 
   if (!progress) {
     return (
@@ -37,20 +40,15 @@ export default function App() {
 
   return (
     <div className="app">
-      <OverallProgress
+      <DashboardHeader
         overall={overall}
-        currentEpisode={progress.currentEpisode}
         totalEpisodes={totalEpisodes}
-        onCurrentEpisodeChange={updateCurrentEpisode}
-      />
-
-      <CatchUpPanel
+        currentEpisode={progress.currentEpisode}
         targetDate={progress.targetDate}
         catchup={catchup}
-        remaining={overall?.remaining ?? 0}
+        onSaveEpisode={updateCurrentEpisode}
+        onIncrementEpisode={handleIncrementEpisode}
         onTargetDateChange={setTargetDate}
-        collapsed={catchupCollapsed}
-        onToggle={() => setCatchupCollapsed((c) => !c)}
       />
 
       <SagaTabs

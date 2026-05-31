@@ -13,139 +13,188 @@
   color: #64748b;
 }
 
-/* Header */
-.hero {
-  padding: 1.25rem 1.25rem 1rem;
-  background: #fff;
+/* Dashboard */
+.dashboard {
+  flex-shrink: 0;
+  padding: 1rem 1.25rem 0.75rem;
+  background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
 }
 
-.hero h1 {
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.stat-card {
+  padding: 0.75rem 0.85rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.stat-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.stat-card-icon {
+  display: flex;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.stat-card-value {
   margin: 0;
   font-size: 1.35rem;
   font-weight: 800;
   color: #0f172a;
+  line-height: 1.1;
 }
 
-.hero-subtitle {
-  margin: 0.35rem 0 0.75rem;
-  font-size: 0.875rem;
-  color: #64748b;
-}
-
-.hero-subtitle strong {
-  color: #0f172a;
-}
-
-.overall-bar {
-  height: 8px;
-  background: #e2e8f0;
-  border-radius: 999px;
-  overflow: hidden;
-  margin-bottom: 0.75rem;
-}
-
-.overall-fill {
-  height: 100%;
-  background: #0f172a;
-  border-radius: 999px;
-  transition: width 0.25s ease;
-}
-
-.current-episode-field {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem;
+.stat-card-value.muted {
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #475569;
+  color: #94a3b8;
 }
 
-.current-episode-field input {
-  width: 4.5rem;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+.stat-card-sub {
+  margin: 0.25rem 0 0;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.update-panel {
+  padding: 1rem;
   background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.update-panel h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
   color: #0f172a;
 }
 
-.episode-max {
-  color: #94a3b8;
-  font-weight: 500;
+.update-desc {
+  margin: 0.35rem 0 1rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
 }
 
-/* Catch-up */
-.catchup-panel {
-  margin: 0.75rem 1.25rem 0;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.catchup-toggle {
+.update-columns {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.65rem 0.85rem;
-  border: none;
-  background: #fff;
-  font-size: 0.875rem;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.update-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #0f172a;
 }
 
-.catchup-chevron {
-  font-size: 0.65rem;
-  color: #94a3b8;
-}
-
-.catchup-body {
-  padding: 0 0.85rem 0.85rem;
-  border-top: 1px solid #f1f5f9;
-}
-
-.catchup-summary {
-  margin: 0.65rem 0;
-  font-size: 0.8rem;
-  color: #64748b;
-}
-
-.catchup-date-field {
+.episode-input-row {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #475569;
+  gap: 0.4rem;
 }
 
-.catchup-date-field input {
-  padding: 0.4rem 0.55rem;
-  border: 1px solid #cbd5e1;
+.episode-input-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f172a;
   background: #fff;
 }
 
-.catchup-highlight {
-  margin: 0.5rem 0 0;
-  font-size: 0.85rem;
-  color: #0f172a;
+.save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #fff;
 }
 
-.catchup-sub {
-  display: block;
-  margin-top: 0.2rem;
-  font-size: 0.75rem;
-  font-weight: 500;
+.save-btn:hover {
+  background: #1e293b;
+}
+
+.episode-range {
+  margin: 0.35rem 0 0.65rem;
+  font-size: 0.7rem;
   color: #94a3b8;
 }
 
-.catchup-result.error {
-  color: #dc2626;
-  font-size: 0.8rem;
+.quick-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.quick-btns button {
+  padding: 0.4rem 0.65rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.quick-btns button:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.date-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #94a3b8;
+}
+
+.date-input-wrap input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  color: #0f172a;
+  font-family: inherit;
+}
+
+.date-input-wrap input:focus {
+  outline: none;
 }
 
 /* Saga tabs */
