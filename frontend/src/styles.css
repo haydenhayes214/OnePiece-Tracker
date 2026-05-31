@@ -15,8 +15,8 @@ body {
   min-height: 100dvh;
   overflow: hidden;
   font-family: "Nunito", system-ui, -apple-system, sans-serif;
-  background: #f8fafc;
-  color: #0f172a;
+  background: #0f3551;
+  color: #172033;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -35,4 +35,19 @@ button {
 input,
 button {
   font-size: 0.875rem;
+}
+
+:root {
+  --op-ink: #172033;
+  --op-navy: #0f3551;
+  --op-navy-deep: #092338;
+  --op-sea: #1d7c9f;
+  --op-sky: #d9f0f4;
+  --op-parchment: #fff7df;
+  --op-paper: #fffaf0;
+  --op-gold: #f2b84b;
+  --op-red: #d83a2e;
+  --op-red-dark: #a62b25;
+  --op-line: rgba(23, 32, 51, 0.12);
+  --op-shadow: 0 10px 26px rgba(9, 35, 56, 0.14);
 }

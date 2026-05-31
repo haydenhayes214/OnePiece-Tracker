@@ -13,6 +13,44 @@ export function canUseExtensionAuth() {
 
 function getAuthTokenInteractive() {
   return new Promise((resolve, reject) => {
+    const webClientId = import.meta.env.VITE_GOOGLE_OAUTH_WEB_CLIENT_ID;
+    if (webClientId && chrome.identity?.launchWebAuthFlow && chrome.identity?.getRedirectURL) {
+      const redirectUri = chrome.identity.getRedirectURL();
+      const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+      authUrl.searchParams.set("client_id", webClientId);
+      authUrl.searchParams.set("response_type", "token");
+      authUrl.searchParams.set("redirect_uri", redirectUri);
+      authUrl.searchParams.set("scope", "openid email profile");
+      authUrl.searchParams.set("prompt", "select_account");
+      authUrl.searchParams.set("include_granted_scopes", "true");
+
+      chrome.identity.launchWebAuthFlow({ url: authUrl.toString(), interactive: true }, (redirectUrl) => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+          return;
+        }
+        if (!redirectUrl) {
+          reject(new Error("No redirect URL returned from OAuth flow"));
+          return;
+        }
+
+        const hash = new URL(redirectUrl).hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const token = params.get("access_token");
+        const error = params.get("error");
+        if (error) {
+          reject(new Error(`OAuth error: ${error}`));
+          return;
+        }
+        if (!token) {
+          reject(new Error("No auth token returned from OAuth flow"));
+          return;
+        }
+        resolve(token);
+      });
+      return;
+    }
+
     chrome.identity.getAuthToken({ interactive: true }, (token) => {
       if (chrome.runtime.lastError) {
         reject(new Error(chrome.runtime.lastError.message));
@@ -37,6 +75,23 @@ function removeCachedAuthToken(token) {
   });
 }
 
+async function clearCachedIdentityToken() {
+  if (!chrome.identity?.getAuthToken || !chrome.identity?.removeCachedAuthToken) {
+    return;
+  }
+
+  await new Promise((resolve) => {
+    chrome.identity.getAuthToken({ interactive: false }, async (token) => {
+      if (chrome.runtime.lastError || !token) {
+        resolve();
+        return;
+      }
+      await removeCachedAuthToken(token);
+      resolve();
+    });
+  });
+}
+
 export async function signInWithGoogle() {
   if (!isFirebaseConfigured()) {
     throw new Error("Firebase is not configured. Add keys to frontend/.env and rebuild.");
@@ -47,6 +102,8 @@ export async function signInWithGoogle() {
 
   const auth = getFirebaseAuth();
   if (!auth) throw new Error("Firebase Auth failed to initialize.");
+
+  await clearCachedIdentityToken();
 
   let token = await getAuthTokenInteractive();
   let credential = GoogleAuthProvider.credential(null, token);
