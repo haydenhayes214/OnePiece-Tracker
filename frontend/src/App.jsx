@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
+import { getArcsForSaga, SAGA_TABS } from "@backend/data/sagas.js";
 import ArcCard from "./components/ArcCard.jsx";
 import CatchUpPanel from "./components/CatchUpPanel.jsx";
 import OverallProgress from "./components/OverallProgress.jsx";
+import SagaTabs from "./components/SagaTabs.jsx";
 import { useProgress } from "./hooks/useProgress.js";
 import "./App.css";
 
 export default function App() {
   const {
-    arcs,
     totalEpisodes,
     progress,
     overall,
@@ -18,22 +19,13 @@ export default function App() {
     setTargetDate,
   } = useProgress();
 
-  const [filter, setFilter] = useState("");
-  const [showIncompleteOnly, setShowIncompleteOnly] = useState(false);
+  const [activeSaga, setActiveSaga] = useState("all");
+  const [expandedArcId, setExpandedArcId] = useState(null);
+  const [catchupCollapsed, setCatchupCollapsed] = useState(false);
 
-  const filteredArcs = useMemo(() => {
-    if (!progress) return [];
-    const q = filter.trim().toLowerCase();
-    return arcs.filter((arc) => {
-      const watched = progress.arcProgress[arc.id] ?? 0;
-      const total = arc.end - arc.start + 1;
-      const incomplete = watched < total;
+  const visibleArcs = useMemo(() => getArcsForSaga(activeSaga), [activeSaga]);
 
-      if (showIncompleteOnly && !incomplete) return false;
-      if (!q) return true;
-      return arc.name.toLowerCase().includes(q) || String(arc.start).includes(q);
-    });
-  }, [arcs, filter, progress, showIncompleteOnly]);
+  const activeSagaName = SAGA_TABS.find((t) => t.id === activeSaga)?.name ?? "Arcs";
 
   if (!progress) {
     return (
@@ -57,44 +49,39 @@ export default function App() {
         catchup={catchup}
         remaining={overall?.remaining ?? 0}
         onTargetDateChange={setTargetDate}
+        collapsed={catchupCollapsed}
+        onToggle={() => setCatchupCollapsed((c) => !c)}
+      />
+
+      <SagaTabs
+        tabs={SAGA_TABS}
+        activeId={activeSaga}
+        onSelect={(id) => {
+          setActiveSaga(id);
+          setExpandedArcId(null);
+        }}
       />
 
       <section className="arcs-section">
-        <div className="arcs-toolbar">
-          <h2>Arcs</h2>
+        <div className="arcs-section-header">
+          <h2>{activeSagaName}</h2>
           {saving && <span className="saving">Saving…</span>}
         </div>
 
-        <div className="toolbar-row">
-          <input
-            type="search"
-            placeholder="Search arcs…"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          />
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              checked={showIncompleteOnly}
-              onChange={(e) => setShowIncompleteOnly(e.target.checked)}
-            />
-            Incomplete only
-          </label>
-        </div>
-
-        <div className="arc-list">
-          {filteredArcs.map((arc) => (
+        <div className="arc-grid">
+          {visibleArcs.map((arc) => (
             <ArcCard
               key={arc.id}
               arc={arc}
               arcProgress={progress.arcProgress}
+              expanded={expandedArcId === arc.id}
+              onToggle={(id) => setExpandedArcId((prev) => (prev === id ? null : id))}
               onChange={(id, watched) => updateArc(id, watched)}
             />
           ))}
-          {filteredArcs.length === 0 && (
-            <p className="muted empty">No arcs match your filters.</p>
-          )}
         </div>
+
+        {visibleArcs.length === 0 && <p className="empty">No arcs in this saga.</p>}
       </section>
     </div>
   );

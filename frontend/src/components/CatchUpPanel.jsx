@@ -1,46 +1,48 @@
-export default function CatchUpPanel({ targetDate, catchup, remaining, onTargetDateChange }) {
+export default function CatchUpPanel({ targetDate, catchup, remaining, onTargetDateChange, collapsed, onToggle }) {
   const minDate = new Date().toISOString().slice(0, 10);
 
   return (
-    <section className="panel catchup-panel">
-      <h2>Catch-up plan</h2>
-      <p className="muted">
-        {remaining > 0
-          ? `${remaining} episode${remaining === 1 ? "" : "s"} left to reach the latest aired episode.`
-          : "You are caught up with all aired episodes!"}
-      </p>
+    <section className={`catchup-panel ${collapsed ? "collapsed" : ""}`}>
+      <button type="button" className="catchup-toggle" onClick={onToggle}>
+        <span>Catch-up plan</span>
+        <span className="catchup-chevron" aria-hidden>
+          {collapsed ? "▼" : "▲"}
+        </span>
+      </button>
 
-      <label className="field">
-        <span>Target catch-up date</span>
-        <input
-          type="date"
-          value={targetDate ?? ""}
-          min={minDate}
-          onChange={(e) => onTargetDateChange(e.target.value)}
-        />
-      </label>
+      {!collapsed && (
+        <div className="catchup-body">
+          <p className="catchup-summary">
+            {remaining > 0
+              ? `${remaining} episode${remaining === 1 ? "" : "s"} left until you are caught up.`
+              : "You are caught up with all aired episodes."}
+          </p>
 
-      {catchup && (
-        <div className={`catchup-result ${catchup.isPast ? "error" : ""}`}>
-          {catchup.message ? (
-            <p>{catchup.message}</p>
-          ) : (
-            <>
-              <p className="catchup-highlight">
-                Watch about <strong>{catchup.episodesPerWeek}</strong> episode
-                {catchup.episodesPerWeek === 1 ? "" : "s"} per week
-              </p>
-              <p className="muted small">
-                {catchup.daysRemaining} days left ({catchup.weeksRemaining} weeks) · ~
-                {catchup.episodesPerDay}/day if you spread evenly
-              </p>
-            </>
+          <label className="catchup-date-field">
+            <span>Target date</span>
+            <input
+              type="date"
+              value={targetDate ?? ""}
+              min={minDate}
+              onChange={(e) => onTargetDateChange(e.target.value)}
+            />
+          </label>
+
+          {catchup && (
+            <div className={`catchup-result ${catchup.isPast ? "error" : ""}`}>
+              {catchup.message ? (
+                <p>{catchup.message}</p>
+              ) : (
+                <p className="catchup-highlight">
+                  Watch about <strong>{catchup.episodesPerWeek}</strong> episodes per week
+                  <span className="catchup-sub">
+                    ({catchup.daysRemaining} days · ~{catchup.episodesPerDay}/day)
+                  </span>
+                </p>
+              )}
+            </div>
           )}
         </div>
-      )}
-
-      {!targetDate && remaining > 0 && (
-        <p className="muted small">Pick a date to see your weekly watch goal.</p>
       )}
     </section>
   );

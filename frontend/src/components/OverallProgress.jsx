@@ -8,25 +8,17 @@ export default function OverallProgress({
 
   return (
     <header className="hero">
-      <div className="hero-title">
-        <span className="hat" aria-hidden>
-          🏴‍☠️
-        </span>
-        <div>
-          <h1>One Piece Tracker</h1>
-          <p className="muted">Grand Line progress by arc</p>
-        </div>
-      </div>
+      <h1>One Piece Tracker</h1>
+      <p className="hero-subtitle">
+        {overall.watchedTotal} / {overall.episodeTotal} episodes · <strong>{overall.percent}%</strong>{" "}
+        complete
+      </p>
 
       <div className="overall-bar" aria-hidden>
         <div className="overall-fill" style={{ width: `${overall.percent}%` }} />
       </div>
-      <p className="overall-stats">
-        <strong>{overall.percent}%</strong> · {overall.watchedTotal} / {overall.episodeTotal}{" "}
-        episodes
-      </p>
 
-      <label className="field inline">
+      <label className="current-episode-field">
         <span>Current episode</span>
         <input
           type="number"
@@ -35,7 +27,7 @@ export default function OverallProgress({
           value={currentEpisode}
           onChange={(e) => onCurrentEpisodeChange(Number(e.target.value))}
         />
-        <span className="muted">/ {totalEpisodes}</span>
+        <span className="episode-max">/ {totalEpisodes}</span>
       </label>
     </header>
   );

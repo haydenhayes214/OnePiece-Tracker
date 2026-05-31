@@ -9,14 +9,15 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-width: 280px;
+  min-width: 320px;
   height: 100%;
   min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
-  font-family: "Nunito", system-ui, sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
+  font-family: "Nunito", system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
@@ -28,6 +29,7 @@ body {
 
 button {
   font-family: inherit;
+  cursor: pointer;
 }
 
 input,
