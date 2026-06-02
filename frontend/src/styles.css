@@ -46,8 +46,8 @@ button {
   --op-parchment: #fff7df;
   --op-paper: #fffaf0;
   --op-gold: #f2b84b;
-  --op-red: #d83a2e;
-  --op-red-dark: #a62b25;
+  --op-red: #d7000f;
+  --op-red-dark: #a3000b;
   --op-line: rgba(23, 32, 51, 0.12);
   --op-shadow: 0 10px 26px rgba(9, 35, 56, 0.14);
 }

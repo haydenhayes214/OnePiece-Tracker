@@ -18,11 +18,25 @@ function requestBackgroundEpisodeSync(force = false) {
   }
 }
 
+function requestWatchReminder(type, settings) {
+  if (typeof chrome === "undefined" || !chrome.runtime?.sendMessage) {
+    return Promise.resolve({ enabled: false, hour: 19 });
+  }
+
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ type, settings }, (response) => {
+      void chrome.runtime.lastError;
+      resolve(response ?? { enabled: false, hour: 19 });
+    });
+  });
+}
+
 export function useProgress() {
   const [progress, setProgress] = useState(null);
   const [episodeMeta, setEpisodeMeta] = useState(null);
   const [saving, setSaving] = useState(false);
   const [episodeSyncing, setEpisodeSyncing] = useState(false);
+  const [watchReminder, setWatchReminder] = useState({ enabled: false, hour: 19 });
   const [ready, setReady] = useState(false);
 
   const refreshEpisodeMeta = useCallback(async ({ force = false } = {}) => {
@@ -50,6 +64,7 @@ export function useProgress() {
       requestBackgroundEpisodeSync();
       const data = await loadProgress();
       setProgress(data);
+      setWatchReminder(await requestWatchReminder("GET_WATCH_REMINDER"));
       await refreshEpisodeMeta();
       setReady(true);
     }
@@ -116,9 +131,23 @@ export function useProgress() {
     (targetDate) => {
       if (!progress) return;
       persist({ ...progress, targetDate: targetDate || null });
+      if (!targetDate && watchReminder.enabled) {
+        requestWatchReminder("SET_WATCH_REMINDER", {
+          ...watchReminder,
+          enabled: false,
+        }).then(setWatchReminder);
+      }
     },
-    [progress, persist]
+    [progress, persist, watchReminder]
   );
+
+  const setWatchReminderEnabled = useCallback(async (enabled) => {
+    const next = await requestWatchReminder("SET_WATCH_REMINDER", {
+      ...watchReminder,
+      enabled,
+    });
+    setWatchReminder(next);
+  }, [watchReminder]);
 
   const overall = progress ? getOverallStats(progress.arcProgress) : null;
   const catchup = progress
@@ -135,10 +164,12 @@ export function useProgress() {
     ready,
     episodeMeta,
     episodeSyncing,
+    watchReminder,
     refreshEpisodeMeta,
     reloadProgress,
     updateArc,
     updateCurrentEpisode,
     setTargetDate,
+    setWatchReminderEnabled,
   };
 }

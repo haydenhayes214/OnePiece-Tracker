@@ -22,11 +22,13 @@ export default function App() {
     ready,
     episodeMeta,
     episodeSyncing,
+    watchReminder,
     refreshEpisodeMeta,
     reloadProgress,
     updateArc,
     updateCurrentEpisode,
     setTargetDate,
+    setWatchReminderEnabled,
   } = useProgress();
 
   const auth = useAuth({
@@ -94,9 +96,11 @@ export default function App() {
         currentEpisode={progress.currentEpisode}
         targetDate={progress.targetDate}
         catchup={catchup}
+        watchReminder={watchReminder}
         onSaveEpisode={updateCurrentEpisode}
         onIncrementEpisode={handleIncrementEpisode}
         onTargetDateChange={setTargetDate}
+        onWatchReminderChange={setWatchReminderEnabled}
       />
 
       <main className="app-main">

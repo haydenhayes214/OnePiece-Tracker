@@ -23,7 +23,7 @@ export default function AppTitle() {
     <header className="app-title">
       <AnchorIcon />
       <div className="app-title-text">
-        <h1>One Piece Progress Tracker</h1>
+        <h1>Log Pose</h1>
         <p>Track your journey through the Grand Line, one episode at a time</p>
       </div>
     </header>

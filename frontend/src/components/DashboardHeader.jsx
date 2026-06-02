@@ -77,9 +77,11 @@ export default function DashboardHeader({
   currentEpisode,
   targetDate,
   catchup,
+  watchReminder,
   onSaveEpisode,
   onIncrementEpisode,
   onTargetDateChange,
+  onWatchReminderChange,
 }) {
   const [draftEpisode, setDraftEpisode] = useState(String(currentEpisode ?? 0));
 
@@ -184,6 +186,23 @@ export default function DashboardHeader({
                 placeholder="Pick a date"
                 onChange={(e) => onTargetDateChange(e.target.value)}
               />
+            </div>
+            <div className="reminder-row">
+              <div>
+                <span className="reminder-title">Daily reminder</span>
+                <span className="reminder-copy">
+                  {targetDate ? "7:00 PM catch-up nudge" : "Set a target date first"}
+                </span>
+              </div>
+              <button
+                type="button"
+                className={`toggle-btn ${watchReminder?.enabled ? "active" : ""}`}
+                onClick={() => onWatchReminderChange(!watchReminder?.enabled)}
+                disabled={!targetDate}
+                aria-pressed={Boolean(watchReminder?.enabled)}
+              >
+                <span />
+              </button>
             </div>
           </div>
         </div>

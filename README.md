@@ -1,4 +1,4 @@
-# One Piece Tracker (Chrome Extension)
+# Log Pose (Chrome Extension)
 
 Track your **One Piece anime** progress arc by arc, set a target catch-up date, and see how many episodes you need to watch **per week** to stay on schedule.
 
