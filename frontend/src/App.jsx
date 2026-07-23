@@ -51,7 +51,7 @@ export default function App() {
 
   const activeSagaName = SAGA_TABS.find((t) => t.id === activeSaga)?.name ?? "Arcs";
 
-  const handleIncrementEpisode = (delta) => {
+  const handleIncrementItem = (delta) => {
     const next = Math.min(totalItems, Math.max(0, activeCurrentItem + delta));
     updateCurrentItem(next);
   };
@@ -128,7 +128,7 @@ export default function App() {
         medium={activeMedium}
         watchReminder={watchReminder}
         onSaveItem={updateCurrentItem}
-        onIncrementItem={handleIncrementEpisode}
+        onIncrementItem={handleIncrementItem}
         onTargetDateChange={setTargetDate}
         onWatchReminderChange={setWatchReminderEnabled}
       />
