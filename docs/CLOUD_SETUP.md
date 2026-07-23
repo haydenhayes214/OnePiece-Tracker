@@ -4,12 +4,12 @@
 
 1. Create a project at [Firebase Console](https://console.firebase.google.com/).
 2. Add a **Web app** and copy the config values into `frontend/.env` (see `frontend/.env.example`).
-3. Enable **Authentication** → Sign-in method → **Google**.
+3. Enable **Authentication** -> Sign-in method -> **Google**.
 4. Create **Firestore Database** (production mode is fine).
 
 ### Firestore rules (recommended)
 
-```
+```text
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -23,9 +23,9 @@ service cloud.firestore {
 ## 2. Google OAuth for Chrome extension
 
 1. Open [Google Cloud Console](https://console.cloud.google.com/) (same project as Firebase).
-2. **APIs & Services** → **Credentials** → **Create credentials** → **OAuth client ID**.
+2. **APIs & Services** -> **Credentials** -> **Create credentials** -> **OAuth client ID**.
 3. Application type: **Chrome extension**.
-4. Item ID: your extension ID from `chrome://extensions` (Developer mode → One Piece Tracker).
+4. Item ID: your extension ID from `chrome://extensions` (Developer mode -> One Piece Tracker).
 5. Copy the client ID into `frontend/.env` as `VITE_GOOGLE_OAUTH_CLIENT_ID`.
 
 ## 3. Build & load
@@ -37,7 +37,9 @@ npm install --prefix frontend
 npm run build
 ```
 
-Load `backend/extension` in Chrome. Sign in with Google — progress syncs to Firestore under `users/{uid}/data/progress`.
+Load `backend/extension` in Chrome. Sign in with Google and progress syncs to Firestore under `users/{uid}/data/progress`.
+
+Cloud save includes anime episode progress, manga chapter progress, target dates, and the latest derived episode/chapter positions.
 
 ## Episode auto-update
 
