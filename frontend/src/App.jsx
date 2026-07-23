@@ -12,10 +12,14 @@ import { useProgress } from "./hooks/useProgress.js";
 import "./App.css";
 
 export default function App() {
+  const [activeMedium, setActiveMedium] = useState("anime");
   const {
     arcs,
-    totalEpisodes,
+    totalItems,
     progress,
+    activeArcProgress,
+    activeTargetDate,
+    activeCurrentItem,
     overall,
     catchup,
     saving,
@@ -26,10 +30,10 @@ export default function App() {
     refreshEpisodeMeta,
     reloadProgress,
     updateArc,
-    updateCurrentEpisode,
+    updateCurrentItem,
     setTargetDate,
     setWatchReminderEnabled,
-  } = useProgress();
+  } = useProgress(activeMedium);
 
   const auth = useAuth({
     onSyncComplete: () => reloadProgress(),
@@ -39,7 +43,7 @@ export default function App() {
   const [expandedArcId, setExpandedArcId] = useState(null);
   const arcGridRef = useRef(null);
 
-  const visibleArcs = useMemo(() => getArcsForSaga(activeSaga), [activeSaga, arcs]);
+  const visibleArcs = useMemo(() => getArcsForSaga(activeSaga, activeMedium), [activeSaga, activeMedium, arcs]);
 
   useEffect(() => {
     arcGridRef.current?.scrollTo({ top: 0, behavior: "smooth" });
@@ -48,8 +52,8 @@ export default function App() {
   const activeSagaName = SAGA_TABS.find((t) => t.id === activeSaga)?.name ?? "Arcs";
 
   const handleIncrementEpisode = (delta) => {
-    const next = Math.min(totalEpisodes, Math.max(0, (progress?.currentEpisode ?? 0) + delta));
-    updateCurrentEpisode(next);
+    const next = Math.min(totalItems, Math.max(0, activeCurrentItem + delta));
+    updateCurrentItem(next);
   };
 
   if (!ready || !progress) {
@@ -84,21 +88,47 @@ export default function App() {
         onSignOut={auth.signOut}
       />
 
-      <EpisodeSyncBanner
-        meta={episodeMeta}
-        syncing={episodeSyncing}
-        onRefresh={() => refreshEpisodeMeta({ force: true })}
-      />
+      {activeMedium === "anime" && (
+        <EpisodeSyncBanner
+          meta={episodeMeta}
+          syncing={episodeSyncing}
+          onRefresh={() => refreshEpisodeMeta({ force: true })}
+        />
+      )}
+
+      <nav className="media-switch" aria-label="Tracker type">
+        <button
+          type="button"
+          className={activeMedium === "anime" ? "active" : ""}
+          onClick={() => {
+            setActiveMedium("anime");
+            setExpandedArcId(null);
+          }}
+        >
+          Anime
+        </button>
+        <button
+          type="button"
+          className={activeMedium === "manga" ? "active" : ""}
+          onClick={() => {
+            setActiveMedium("manga");
+            setExpandedArcId(null);
+          }}
+        >
+          Manga
+        </button>
+      </nav>
 
       <DashboardHeader
         overall={overall}
-        totalEpisodes={totalEpisodes}
-        currentEpisode={progress.currentEpisode}
-        targetDate={progress.targetDate}
+        totalItems={totalItems}
+        currentItem={activeCurrentItem}
+        targetDate={activeTargetDate}
         catchup={catchup}
+        medium={activeMedium}
         watchReminder={watchReminder}
-        onSaveEpisode={updateCurrentEpisode}
-        onIncrementEpisode={handleIncrementEpisode}
+        onSaveItem={updateCurrentItem}
+        onIncrementItem={handleIncrementEpisode}
         onTargetDateChange={setTargetDate}
         onWatchReminderChange={setWatchReminderEnabled}
       />
@@ -125,7 +155,8 @@ export default function App() {
               <ArcCard
                 key={arc.id}
                 arc={arc}
-                arcProgress={progress.arcProgress}
+                arcProgress={activeArcProgress}
+                medium={activeMedium}
                 expanded={expandedArcId === arc.id}
                 onToggle={(id) => setExpandedArcId((prev) => (prev === id ? null : id))}
                 onChange={(id, watched) => updateArc(id, watched)}

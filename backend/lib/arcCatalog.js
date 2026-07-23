@@ -1,4 +1,11 @@
-import { ARCS as BASE_ARCS, BASE_TOTAL_EPISODES, LATEST_ARC_ID, getArcEpisodeCount } from "../data/arcs.js";
+import {
+  ARCS as BASE_ARCS,
+  BASE_TOTAL_EPISODES,
+  LATEST_ARC_ID,
+  LATEST_MANGA_CHAPTER,
+  getArcChapterCount,
+  getArcEpisodeCount,
+} from "../data/arcs.js";
 
 export const EPISODE_META_KEY = "episodeCatalogMeta";
 
@@ -22,8 +29,27 @@ export function getArcs() {
   return cachedArcs;
 }
 
+export function getArcsForMedium(medium = "anime") {
+  if (medium === "manga") {
+    return cachedArcs.filter((arc) => getArcChapterCount(arc) > 0);
+  }
+  return cachedArcs;
+}
+
 export function getTotalEpisodes() {
   return cachedArcs[cachedArcs.length - 1]?.end ?? BASE_TOTAL_EPISODES;
+}
+
+export function getTotalChapters() {
+  return LATEST_MANGA_CHAPTER;
+}
+
+export function getTotalItems(medium = "anime") {
+  return medium === "manga" ? getTotalChapters() : getTotalEpisodes();
+}
+
+export function getArcItemCount(arc, medium = "anime") {
+  return medium === "manga" ? getArcChapterCount(arc) : getArcEpisodeCount(arc);
 }
 
 export function getEpisodeMeta() {
@@ -41,4 +67,4 @@ export function resetArcCatalog() {
   cachedArcs = buildArcsFromMeta(null);
 }
 
-export { getArcEpisodeCount, LATEST_ARC_ID, BASE_TOTAL_EPISODES };
+export { getArcEpisodeCount, getArcChapterCount, LATEST_ARC_ID, BASE_TOTAL_EPISODES, LATEST_MANGA_CHAPTER };

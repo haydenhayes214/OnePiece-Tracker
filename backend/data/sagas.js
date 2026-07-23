@@ -1,4 +1,4 @@
-import { getArcs } from "../lib/arcCatalog.js";
+import { getArcsForMedium } from "../lib/arcCatalog.js";
 
 /** @type {{ id: string, name: string, arcIds: string[] }[]} */
 export const SAGAS = [
@@ -102,8 +102,8 @@ export function getSagaName(arcId) {
   return getSagaForArc(arcId)?.name ?? "Unknown";
 }
 
-export function getArcsForSaga(sagaId) {
-  const arcs = getArcs();
+export function getArcsForSaga(sagaId, medium = "anime") {
+  const arcs = getArcsForMedium(medium);
   if (sagaId === "all") return arcs;
   const saga = SAGAS.find((s) => s.id === sagaId);
   if (!saga) return [];

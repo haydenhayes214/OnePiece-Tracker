@@ -33,6 +33,15 @@ function TvIcon() {
   );
 }
 
+function BookIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z" />
+    </svg>
+  );
+}
+
 function CalendarIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -71,35 +80,44 @@ function formatTargetDate(iso) {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
+function titleCase(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 export default function DashboardHeader({
   overall,
-  totalEpisodes,
-  currentEpisode,
+  totalItems,
+  currentItem,
   targetDate,
   catchup,
+  medium = "anime",
   watchReminder,
-  onSaveEpisode,
-  onIncrementEpisode,
+  onSaveItem,
+  onIncrementItem,
   onTargetDateChange,
   onWatchReminderChange,
 }) {
-  const [draftEpisode, setDraftEpisode] = useState(String(currentEpisode ?? 0));
+  const [draftItem, setDraftItem] = useState(String(currentItem ?? 0));
 
   useEffect(() => {
-    setDraftEpisode(String(currentEpisode ?? 0));
-  }, [currentEpisode]);
+    setDraftItem(String(currentItem ?? 0));
+  }, [currentItem]);
 
+  const itemName = medium === "manga" ? "chapter" : "episode";
+  const itemTitle = titleCase(itemName);
+  const itemPlural = medium === "manga" ? "chapters" : "episodes";
+  const itemPluralTitle = titleCase(itemPlural);
   const remaining = overall?.remaining ?? 0;
   const targetLabel = formatTargetDate(targetDate);
-  const episodesPerWeek =
+  const perWeek =
     catchup && !catchup.isPast && !catchup.message && catchup.episodesPerWeek != null
       ? String(catchup.episodesPerWeek)
       : null;
 
   const handleSave = () => {
-    const n = Math.min(totalEpisodes, Math.max(0, Number(draftEpisode) || 0));
-    setDraftEpisode(String(n));
-    onSaveEpisode(n);
+    const n = Math.min(totalItems, Math.max(0, Number(draftItem) || 0));
+    setDraftItem(String(n));
+    onSaveItem(n);
   };
 
   const minDate = new Date().toISOString().slice(0, 10);
@@ -111,13 +129,13 @@ export default function DashboardHeader({
           title="Overall Progress"
           icon={<TrendIcon />}
           value={`${overall?.percent ?? 0}%`}
-          subtext={`${overall?.watchedTotal ?? 0} / ${overall?.episodeTotal ?? totalEpisodes} episodes`}
+          subtext={`${overall?.watchedTotal ?? 0} / ${overall?.totalItems ?? totalItems} ${itemPlural}`}
         />
         <StatCard
-          title="Episodes Remaining"
-          icon={<TvIcon />}
+          title={`${itemPluralTitle} Remaining`}
+          icon={medium === "manga" ? <BookIcon /> : <TvIcon />}
           value={String(remaining)}
-          subtext="episodes to go"
+          subtext={`${itemPlural} to go`}
         />
         <StatCard
           title="Target Date"
@@ -126,48 +144,48 @@ export default function DashboardHeader({
           muted={!targetLabel}
         />
         <StatCard
-          title="Episodes/Week"
+          title={`${itemPluralTitle}/Week`}
           icon={<TargetIcon />}
-          value={episodesPerWeek ?? "Set target date"}
-          muted={!episodesPerWeek}
+          value={perWeek ?? "Set target date"}
+          muted={!perWeek}
         />
       </div>
 
       <section className="update-panel">
         <h2>Update Your Progress</h2>
-        <p className="update-desc">Track which episode you&apos;re on and set your catch-up goal</p>
+        <p className="update-desc">Track your current {itemName} and set your catch-up goal</p>
 
         <div className="update-columns">
           <div className="update-col">
-            <label className="update-label" htmlFor="current-episode">
-              Current Episode
+            <label className="update-label" htmlFor="current-item">
+              Current {itemTitle}
             </label>
             <div className="episode-input-row">
               <input
-                id="current-episode"
+                id="current-item"
                 type="number"
                 min={0}
-                max={totalEpisodes}
-                value={draftEpisode}
-                onChange={(e) => setDraftEpisode(e.target.value)}
+                max={totalItems}
+                value={draftItem}
+                onChange={(e) => setDraftItem(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSave()}
               />
-              <button type="button" className="save-btn" onClick={handleSave} aria-label="Save episode">
+              <button type="button" className="save-btn" onClick={handleSave} aria-label={`Save ${itemName}`}>
                 <SaveIcon />
               </button>
             </div>
             <p className="episode-range">
-              Episode 0 – {totalEpisodes}
+              {itemTitle} 0 - {totalItems}
             </p>
             <div className="quick-btns">
-              <button type="button" onClick={() => onIncrementEpisode(1)}>
-                +1 Episode
+              <button type="button" onClick={() => onIncrementItem(1)}>
+                +1 {itemTitle}
               </button>
-              <button type="button" onClick={() => onIncrementEpisode(5)}>
-                +5 Episodes
+              <button type="button" onClick={() => onIncrementItem(5)}>
+                +5 {itemPluralTitle}
               </button>
-              <button type="button" onClick={() => onIncrementEpisode(10)}>
-                +10 Episodes
+              <button type="button" onClick={() => onIncrementItem(10)}>
+                +10 {itemPluralTitle}
               </button>
             </div>
           </div>

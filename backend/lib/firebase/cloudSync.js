@@ -19,8 +19,11 @@ export async function pullCloudProgress(uid) {
   const data = snap.data();
   return mergeStoredProgress({
     arcProgress: data.arcProgress,
+    mangaArcProgress: data.mangaArcProgress,
     targetDate: data.targetDate,
+    mangaTargetDate: data.mangaTargetDate,
     currentEpisode: data.currentEpisode,
+    currentChapter: data.currentChapter,
     updatedAt: data.updatedAt?.toMillis?.() ?? data.updatedAt ?? 0,
   });
 }
@@ -30,8 +33,11 @@ export async function pushCloudProgress(uid, progress) {
 
   const payload = {
     arcProgress: progress.arcProgress,
+    mangaArcProgress: progress.mangaArcProgress,
     targetDate: progress.targetDate,
+    mangaTargetDate: progress.mangaTargetDate,
     currentEpisode: progress.currentEpisode,
+    currentChapter: progress.currentChapter,
     updatedAt: progress.updatedAt ?? Date.now(),
     syncedAt: serverTimestamp(),
   };

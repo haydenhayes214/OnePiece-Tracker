@@ -518,6 +518,35 @@
   color: var(--op-navy);
 }
 
+/* Tracker switch */
+.media-switch {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem;
+  padding: 0.5rem 1.25rem;
+  background: var(--op-parchment);
+  border-bottom: 1px solid rgba(15, 53, 81, 0.12);
+}
+
+.media-switch button {
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(15, 53, 81, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 253, 247, 0.82);
+  color: #59646f;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.media-switch button.active {
+  background: var(--op-navy);
+  border-color: var(--op-navy);
+  color: var(--op-paper);
+  box-shadow: 0 2px 0 var(--op-gold);
+}
+
 .saga-tab.active {
   background: var(--op-paper);
   color: var(--op-navy);

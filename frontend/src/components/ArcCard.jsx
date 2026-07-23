@@ -1,6 +1,6 @@
-import { getArcEpisodeCount } from "@backend/data/arcs.js";
 import { getArcTheme } from "@backend/data/sagaThemes.js";
 import { getSagaName } from "@backend/data/sagas.js";
+import { getArcItemCount } from "@backend/lib/arcCatalog.js";
 import { getArcStats } from "@backend/lib/progress.js";
 
 function CheckIcon({ color }) {
@@ -18,14 +18,20 @@ function CheckIcon({ color }) {
   );
 }
 
-export default function ArcCard({ arc, arcProgress, expanded, onToggle, onChange }) {
-  const { total, watched, percent, remaining } = getArcStats(arc, arcProgress);
+export default function ArcCard({ arc, arcProgress, expanded, medium = "anime", onToggle, onChange }) {
+  const { total, watched, percent, remaining } = getArcStats(arc, arcProgress, medium);
   const isComplete = watched >= total && total > 0;
   const isInProgress = watched > 0 && !isComplete;
   const sagaName = getSagaName(arc.id);
   const theme = getArcTheme(arc.id);
-  const episodeCount = getArcEpisodeCount(arc);
-  const currentEpisode = isInProgress ? Math.min(arc.start + watched - 1, arc.end) : null;
+  const itemCount = getArcItemCount(arc, medium);
+  const start = medium === "manga" ? arc.mangaStart : arc.start;
+  const end = medium === "manga" ? arc.mangaEnd : arc.end;
+  const itemName = medium === "manga" ? "chapter" : "episode";
+  const itemNamePlural = medium === "manga" ? "chapters" : "episodes";
+  const itemShort = medium === "manga" ? "Ch." : "Ep.";
+  const verb = medium === "manga" ? "Reading" : "Watching";
+  const currentItem = isInProgress ? Math.min(start + watched - 1, end) : null;
 
   const setWatched = (value) => onChange(arc.id, value);
 
@@ -60,7 +66,8 @@ export default function ArcCard({ arc, arcProgress, expanded, onToggle, onChange
       <div className="arc-meta">
         <span className="saga-pill">{sagaName}</span>
         <span className="arc-episodes">
-          Ep. {arc.start}–{arc.end} ({episodeCount} episode{episodeCount === 1 ? "" : "s"})
+          {itemShort} {start}-{end} ({itemCount} {itemName}
+          {itemCount === 1 ? "" : "s"})
         </span>
       </div>
 
@@ -73,9 +80,9 @@ export default function ArcCard({ arc, arcProgress, expanded, onToggle, onChange
         <div className="progress-fill" style={{ width: `${percent}%` }} />
       </div>
 
-      {isInProgress && currentEpisode && (
+      {isInProgress && currentItem && (
         <p className="arc-status">
-          Watching episode {currentEpisode} of {arc.end}
+          {verb} {itemName} {currentItem} of {end}
         </p>
       )}
 
@@ -83,7 +90,7 @@ export default function ArcCard({ arc, arcProgress, expanded, onToggle, onChange
         <div className="arc-editor" onClick={(e) => e.stopPropagation()}>
           <div className="arc-buttons">
             <button type="button" onClick={() => setWatched(watched - 1)} disabled={watched <= 0}>
-              −1
+              -1
             </button>
             <input
               type="number"
@@ -91,7 +98,7 @@ export default function ArcCard({ arc, arcProgress, expanded, onToggle, onChange
               max={total}
               value={watched}
               onChange={(e) => setWatched(Number(e.target.value))}
-              aria-label={`Episodes watched in ${arc.name}`}
+              aria-label={`${itemName} progress in ${arc.name}`}
             />
             <span className="arc-total">/ {total}</span>
             <button type="button" onClick={() => setWatched(watched + 1)} disabled={watched >= total}>
@@ -101,7 +108,11 @@ export default function ArcCard({ arc, arcProgress, expanded, onToggle, onChange
               Mark done
             </button>
           </div>
-          {remaining > 0 && <p className="arc-remaining">{remaining} left in this arc</p>}
+          {remaining > 0 && (
+            <p className="arc-remaining">
+              {remaining} {remaining === 1 ? itemName : itemNamePlural} left in this arc
+            </p>
+          )}
         </div>
       )}
     </article>

@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import { getArcs, getEpisodeMeta, getTotalEpisodes } from "@backend/lib/arcCatalog.js";
+import { getArcsForMedium, getEpisodeMeta, getTotalItems } from "@backend/lib/arcCatalog.js";
 import { initArcCatalog, syncEpisodeCountIfStale } from "@backend/lib/episodeSync.js";
 import { getCatchupFromProgress } from "@backend/lib/catchup.js";
 import {
   deriveCurrentEpisode,
+  deriveCurrentChapter,
+  getCurrentProgressItem,
   getOverallStats,
+  getProgressMap,
+  getTargetDate,
   setArcWatched,
+  setCurrentChapter,
   setCurrentEpisode,
 } from "@backend/lib/progress.js";
 import { loadProgress, saveProgress } from "@backend/lib/storage.js";
@@ -31,7 +36,7 @@ function requestWatchReminder(type, settings) {
   });
 }
 
-export function useProgress() {
+export function useProgress(medium = "anime") {
   const [progress, setProgress] = useState(null);
   const [episodeMeta, setEpisodeMeta] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -103,34 +108,57 @@ export function useProgress() {
   const updateArc = useCallback(
     (arcId, watched, options) => {
       if (!progress) return;
-      const arcProgress = setArcWatched(progress.arcProgress, arcId, watched, options);
-      persist({
-        ...progress,
-        arcProgress,
-        currentEpisode: deriveCurrentEpisode(arcProgress),
-      });
+      const sourceProgress = getProgressMap(progress, medium);
+      const arcProgress = setArcWatched(sourceProgress, arcId, watched, { ...options, medium });
+      const next =
+        medium === "manga"
+          ? {
+              ...progress,
+              mangaArcProgress: arcProgress,
+              currentChapter: deriveCurrentChapter(arcProgress),
+            }
+          : {
+              ...progress,
+              arcProgress,
+              currentEpisode: deriveCurrentEpisode(arcProgress),
+            };
+      persist(next);
     },
-    [progress, persist]
+    [medium, progress, persist]
+  );
+
+  const updateCurrentItem = useCallback(
+    (item) => {
+      if (!progress) return;
+      const sourceProgress = getProgressMap(progress, medium);
+      const arcProgress =
+        medium === "manga"
+          ? setCurrentChapter(sourceProgress, item)
+          : setCurrentEpisode(sourceProgress, item);
+      const max = getTotalItems(medium);
+      const clamped = Math.min(max, Math.max(0, item));
+      const next =
+        medium === "manga"
+          ? { ...progress, mangaArcProgress: arcProgress, currentChapter: clamped }
+          : { ...progress, arcProgress, currentEpisode: clamped };
+      persist(next);
+    },
+    [medium, progress, persist]
   );
 
   const updateCurrentEpisode = useCallback(
-    (episode) => {
-      if (!progress) return;
-      const arcProgress = setCurrentEpisode(progress.arcProgress, episode);
-      const max = getTotalEpisodes();
-      persist({
-        ...progress,
-        arcProgress,
-        currentEpisode: Math.min(max, Math.max(0, episode)),
-      });
-    },
-    [progress, persist]
+    (episode) => updateCurrentItem(episode),
+    [updateCurrentItem]
   );
 
   const setTargetDate = useCallback(
     (targetDate) => {
       if (!progress) return;
-      persist({ ...progress, targetDate: targetDate || null });
+      persist(
+        medium === "manga"
+          ? { ...progress, mangaTargetDate: targetDate || null }
+          : { ...progress, targetDate: targetDate || null }
+      );
       if (!targetDate && watchReminder.enabled) {
         requestWatchReminder("SET_WATCH_REMINDER", {
           ...watchReminder,
@@ -138,7 +166,7 @@ export function useProgress() {
         }).then(setWatchReminder);
       }
     },
-    [progress, persist, watchReminder]
+    [medium, progress, persist, watchReminder]
   );
 
   const setWatchReminderEnabled = useCallback(async (enabled) => {
@@ -149,15 +177,22 @@ export function useProgress() {
     setWatchReminder(next);
   }, [watchReminder]);
 
-  const overall = progress ? getOverallStats(progress.arcProgress) : null;
+  const activeArcProgress = progress ? getProgressMap(progress, medium) : {};
+  const activeTargetDate = progress ? getTargetDate(progress, medium) : null;
+  const activeCurrentItem = progress ? getCurrentProgressItem(progress, medium) : 0;
+  const overall = progress ? getOverallStats(activeArcProgress, medium) : null;
   const catchup = progress
-    ? getCatchupFromProgress(progress.targetDate, progress.arcProgress)
+    ? getCatchupFromProgress(activeTargetDate, activeArcProgress, medium)
     : null;
 
   return {
-    arcs: getArcs(),
-    totalEpisodes: getTotalEpisodes(),
+    arcs: getArcsForMedium(medium),
+    totalEpisodes: getTotalItems(medium),
+    totalItems: getTotalItems(medium),
     progress,
+    activeArcProgress,
+    activeTargetDate,
+    activeCurrentItem,
     overall,
     catchup,
     saving,
@@ -168,6 +203,7 @@ export function useProgress() {
     refreshEpisodeMeta,
     reloadProgress,
     updateArc,
+    updateCurrentItem,
     updateCurrentEpisode,
     setTargetDate,
     setWatchReminderEnabled,

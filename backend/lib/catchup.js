@@ -69,8 +69,8 @@ export function calculateCatchup(targetDate, remainingEpisodes) {
   };
 }
 
-export function getCatchupFromProgress(targetDate, arcProgress) {
-  const { remaining } = getOverallStats(arcProgress);
+export function getCatchupFromProgress(targetDate, arcProgress, medium = "anime") {
+  const { remaining } = getOverallStats(arcProgress, medium);
   return calculateCatchup(targetDate, remaining);
 }
 

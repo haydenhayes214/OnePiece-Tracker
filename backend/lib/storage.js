@@ -2,6 +2,7 @@ import { initArcCatalog } from "./episodeSync.js";
 import {
   DEFAULT_PROGRESS,
   STORAGE_KEY,
+  deriveCurrentChapter,
   deriveCurrentEpisode,
   mergeProgress,
   mergeStoredProgress,
@@ -25,6 +26,7 @@ async function loadLocalProgress() {
     chrome.storage.local.get([STORAGE_KEY], (result) => {
       const merged = mergeStoredProgress(result[STORAGE_KEY]);
       merged.currentEpisode = deriveCurrentEpisode(merged.arcProgress);
+      merged.currentChapter = deriveCurrentChapter(merged.mangaArcProgress);
       resolve(merged);
     });
   });
@@ -34,6 +36,7 @@ async function saveLocalProgress(progress) {
   const payload = {
     ...progress,
     currentEpisode: deriveCurrentEpisode(progress.arcProgress),
+    currentChapter: deriveCurrentChapter(progress.mangaArcProgress),
     updatedAt: Date.now(),
   };
 
@@ -104,6 +107,7 @@ function loadFromLocalStorage() {
     if (!raw) return { ...DEFAULT_PROGRESS };
     const merged = mergeStoredProgress(JSON.parse(raw));
     merged.currentEpisode = deriveCurrentEpisode(merged.arcProgress);
+    merged.currentChapter = deriveCurrentChapter(merged.mangaArcProgress);
     return merged;
   } catch {
     return { ...DEFAULT_PROGRESS };
