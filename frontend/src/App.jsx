@@ -100,6 +100,7 @@ export default function App() {
         <button
           type="button"
           className={activeMedium === "anime" ? "active" : ""}
+          aria-pressed={activeMedium === "anime"}
           onClick={() => {
             setActiveMedium("anime");
             setExpandedArcId(null);
@@ -110,6 +111,7 @@ export default function App() {
         <button
           type="button"
           className={activeMedium === "manga" ? "active" : ""}
+          aria-pressed={activeMedium === "manga"}
           onClick={() => {
             setActiveMedium("manga");
             setExpandedArcId(null);
