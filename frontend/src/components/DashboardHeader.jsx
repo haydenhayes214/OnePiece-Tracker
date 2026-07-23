@@ -207,9 +207,9 @@ export default function DashboardHeader({
             </div>
             <div className="reminder-row">
               <div>
-                <span className="reminder-title">Daily reminder</span>
+                <span className="reminder-title">Daily progress reminder</span>
                 <span className="reminder-copy">
-                  {targetDate ? "7:00 PM catch-up nudge" : "Set a target date first"}
+                  {targetDate ? `7:00 PM ${itemName} nudge` : "Set a target date first"}
                 </span>
               </div>
               <button
